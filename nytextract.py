@@ -240,7 +240,9 @@ def signal_handler(signal, frame):
 if __name__ == "__main__":
 
     importlib.reload(sys)
-    sys.setdefaultencoding('utf-8')
+
+    ## Not needed for Python3
+    #sys.setdefaultencoding('utf-8')
 
     signal.signal(signal.SIGINT, signal_handler)
 
