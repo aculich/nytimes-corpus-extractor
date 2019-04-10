@@ -1,4 +1,4 @@
-﻿#!/usr/bin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import time
@@ -13,6 +13,7 @@ import fnmatch
 import tarfile
 
 from lxml import etree
+import importlib
 
 # ===========================================================================================================
 # Default configuration
@@ -27,24 +28,24 @@ APPEND_IF_EXIST       = False                   # True or False
 logger = logging. getLogger ('nytextract')
 logger. addHandler (logging. StreamHandler ())
 logger. setLevel (logging. DEBUG)
-        
+
 usage = "Usage: %prog [options] <xml directory>"
 def parse_command_line(argv):
     """Command line options parser
     """
-            
+
     parser = optparse.OptionParser(add_help_option=True, usage=usage)
-    
+
     parser.add_option("-a", "--append", action="store_true", dest="append", default=APPEND_IF_EXIST,
                       help="Append if existing (default: {0!s})".format((APPEND_IF_EXIST)))
-    parser.add_option("-o", "--out", action="store", 
+    parser.add_option("-o", "--out", action="store",
                       type="string", dest="outfile", default=CSV_OUTPUT_FILE,
                       help="CSV output file (default: {0!s})".format((CSV_OUTPUT_FILE)))
-    parser.add_option("-d", "--dir", action="store", 
+    parser.add_option("-d", "--dir", action="store",
                       type="string", dest="outdir", default=TEXT_OUTPUT_DIR,
                       help="Text output directory (default: {0!s})".format((TEXT_OUTPUT_DIR)))
     return parser.parse_args(argv)
-    
+
 """Data Fields Information
    Short Name | Type | Count | XPATH
    Extract from: nyt_corpus_overview.pdf
@@ -111,7 +112,7 @@ def export_text(filename, rootdir, text):
     extdir = rootdir + '/' + os.path.dirname(relpath)
     fname = extdir + '/' + os.path.basename(relpath)
     fname = os.path.splitext(fname)[0] + '.fulltext.txt'
-    print("Exporting text: {0!s}".format((fname)))
+    print(("Exporting text: {0!s}".format((fname))))
     try:
         if not os.path.exists(extdir):
             os.makedirs(extdir)
@@ -130,7 +131,7 @@ def reform_byline(s):
         return m.group(1)
     else:
         return s
-    
+
 match_people_re = re.compile(r'(.*)\s*\,\s*([^\(]*)')
 def reform_people(s):
     """Returns reformatted Peoples field
@@ -149,7 +150,7 @@ def reform_people(s):
 def parse_xml(filename, xml=None, textdir=''):
     """Returns data fields parse from XML input file
     """
-    print("Processing input file: {0!s}".format((filename)))
+    print(("Processing input file: {0!s}".format((filename))))
     if xml is None:
         infile = open(filename, 'rt')
         tree = etree.parse(infile)
@@ -186,29 +187,29 @@ def parse_xml(filename, xml=None, textdir=''):
             s = reform_people(s)
         row.append(s)
     return row
-    
+
 def main(options, args):
     """ Main Entry Point
     """
     rootdir = args[1]
-        
+
     """Create output file
     """
     try:
         if options.append:
             csvfile = open(options.outfile, 'ab')
         else:
-            csvfile = open(options.outfile, 'wb')        
+            csvfile = open(options.outfile, 'wb')
         csvwriter = csv.writer(csvfile, dialect='excel', delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
     except:
-        print "ERROR: Cannot create output file"
+        print("ERROR: Cannot create output file")
         return -1
     if not options.append:
         h = [a[0] for a in DATA_FIELDS]
         h.append('Filename')
         csvwriter.writerow(h)
-    
+
     # For each XML files in folder and sub-folders
     for root, dirnames, filenames in os.walk(rootdir):
         for filename in fnmatch.filter(filenames, '*.*'):
@@ -231,24 +232,24 @@ def main(options, args):
                     csvwriter.writerow(row)
     csvfile.close()
     return 0
-    
+
 def signal_handler(signal, frame):
-    print 'You pressed Ctrl+C!'
+    print('You pressed Ctrl+C!')
     os._exit(1)
-    
+
 if __name__ == "__main__":
 
-    reload(sys)
+    importlib.reload(sys)
     sys.setdefaultencoding('utf-8')
-    
+
     signal.signal(signal.SIGINT, signal_handler)
-    
-    print("{0!s} - r2 (2013/05/28)\n".format((os.path.basename(sys.argv[0]))))
-    
+
+    print(("{0!s} - r2 (2013/05/28)\n".format((os.path.basename(sys.argv[0])))))
+
     (options, args) = parse_command_line(sys.argv)
 
     if len(args) < 2:
         print("Please specify root directory of XML input files (-h/--help for help)")
         sys.exit(-1)
-        
+
     main(options, args)
