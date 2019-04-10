@@ -95,6 +95,7 @@ DATA_FIELDS  =  [
                 ('Series Name', 'String', 'Single', '/nitf/head/meta[@name="series_name"]/@content'),
                 ('Slug', 'String', 'Single', '/nitf/head/meta[@name="slug"]/@content'),
                 ('Taxonomic Classifiers', 'String', 'Multiple', '/nitf/head/docdata/identified-content/classifier[@class="online_producer" and @type="taxonomic_classifier"]'),
+                ('Title', 'String', 'Single', '/nitf/head/title'),
                 ('Titles', 'String', 'Multiple', '/nitf/head/docdata/identified-content/object.title[@class="indexing_service"]'),
                 ('Types Of Material', 'String', 'Multiple', '/nitf/head/docdata/identified-content/classifier[@class="online_producer" and @type="types_of_material"]'),
                 ('Url', 'URL', 'Single', '/nitf/head/pubdata/@ex-ref'),
