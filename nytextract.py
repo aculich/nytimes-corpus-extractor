@@ -198,9 +198,9 @@ def main(options, args):
     """
     try:
         if options.append:
-            csvfile = open(options.outfile, 'ab')
+            csvfile = open(options.outfile, 'a')
         else:
-            csvfile = open(options.outfile, 'wb')
+            csvfile = open(options.outfile, 'w')
         csvwriter = csv.writer(csvfile, dialect='excel', delimiter=',',
                                 quotechar='"', quoting=csv.QUOTE_MINIMAL)
     except:
